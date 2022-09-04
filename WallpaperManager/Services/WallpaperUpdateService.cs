@@ -31,15 +31,15 @@ namespace WallpaperManager.Services
             {
                 _delayCancellationTokenSource?.Cancel();
             };
-        }
 
-        public void RunTask()
-        {
             Microsoft.Win32.SystemEvents.SessionSwitch += (sender, args) =>
             {
                 _delayCancellationTokenSource?.Cancel();
             };
+        }
 
+        public void RunTask()
+        {
             Task.Run(Run);
         }
 
