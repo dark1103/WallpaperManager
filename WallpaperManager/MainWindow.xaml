@@ -35,7 +35,7 @@
 
     <DockPanel>
         <hc:ScrollViewer HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Hidden" Orientation="Vertical">
-            <StackPanel Orientation="Vertical" Margin="30 0">
+            <StackPanel Orientation="Vertical" Margin="30 0" MinWidth="410">
                 <ListBox Name="GroupList" ItemsSource="{Binding Groups}" SelectedItem="{Binding Path=SelectedGroup, Mode=TwoWay}" SelectedIndex="0" TabIndex="0">
                     <ListBox.ItemTemplate>
                         <DataTemplate>
@@ -76,7 +76,8 @@
                                     Grid.Row="0" Grid.Column="4"  
                                     Command="{Binding ElementName=Window, Path=DataContext.RemoveGroupCommand}"
                                     CommandParameter="{Binding}"
-                                    HorizontalAlignment="Right">
+                                    HorizontalAlignment="Right" 
+                                    Style="{StaticResource ButtonDanger}" FontWeight="Bold">
                                     -
                                 </Button>
                             </Grid>
@@ -85,7 +86,8 @@
                 </ListBox>
                 <Button
                     Command="{Binding ElementName=Window, Path=DataContext.AddGroupCommand}"
-                    HorizontalAlignment="Right">
+                    HorizontalAlignment="Right"
+                    Style="{StaticResource ButtonSuccess}" FontWeight="Bold" Margin="5">
                     +
                 </Button>
             </StackPanel>
@@ -95,7 +97,7 @@
                  HorizontalContentAlignment="Stretch" 
                  VerticalContentAlignment="Center" 
                  AllowDrop="True" Focusable="False"
-                 Background="Transparent"
+                 Background="#FFDEDEDE"
                  BorderThickness="0" DockPanel.Dock="Right">
             <ListBox.ItemTemplate>
                 <DataTemplate>

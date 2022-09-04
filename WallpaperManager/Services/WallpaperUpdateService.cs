@@ -144,6 +144,7 @@ namespace WallpaperManager.Services
         {
             return wallpaperGroups.FirstOrDefault(x=> 
                 x.StateIndex == currentStateIndex 
+                && x.AllImages.Any()
                 && (x.Start == x.End 
                     || (x.Start < x.End 
                         ? (now.TimeOfDay >= x.Start && now.TimeOfDay < x.End) 
