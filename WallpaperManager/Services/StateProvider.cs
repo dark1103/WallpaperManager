@@ -9,7 +9,7 @@ using WallpaperManager.Model;
 
 namespace WallpaperManager.Services
 {
-    internal class StateProvider : IStateProvider
+    public class StateProvider : IStateProvider
     {
         private const string Filename = "state.json";
         public WallpaperState CurrentState { get; }

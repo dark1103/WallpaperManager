@@ -7,7 +7,7 @@ using WallpaperManager.Model;
 
 namespace WallpaperManager.Services
 {
-    internal interface IStateProvider
+    public interface IStateProvider
     {
         WallpaperState CurrentState { get; }
         event Action<WallpaperState> OnStateChanged;

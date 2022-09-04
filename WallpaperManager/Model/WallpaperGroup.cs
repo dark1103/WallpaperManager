@@ -16,7 +16,7 @@ namespace WallpaperManager.Model
         public int StateIndex { get; set; }
         public TimeSpan Start { get; set; }
         public TimeSpan End { get; set; }
-        public bool IsRandom { get; set; }
+        public bool IsRandom { get; set; } = true;
         public TimeSpan Interval { get; set; }
 
         public List<string>? Displays { get; set; }

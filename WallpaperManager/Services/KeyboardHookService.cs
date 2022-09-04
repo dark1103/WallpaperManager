@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using KeyboardHookLite;
+using static System.Windows.Forms.AxHost;
 
 namespace WallpaperManager.Services
 {
@@ -25,11 +27,12 @@ namespace WallpaperManager.Services
             _keyboardHook = new KeyboardHook();
             _keyboardHook.KeyboardPressed += (sender, args) =>
             {
-                if (args.InputEvent.Key == Key.F10 && Keyboard.IsKeyDown(Key.LeftAlt) && Keyboard.IsKeyDown(Key.LeftCtrl))
+                if (args.KeyPressType == KeyboardHook.KeyPressType.KeyDown && args.InputEvent.Key == Key.F10 && Keyboard.IsKeyDown(Key.LeftAlt) && Keyboard.IsKeyDown(Key.LeftCtrl))
                 {
                     var maxStateIndex = _wallpaperGroupsProvider.Groups.Max(x => x.StateIndex) + 1;
 
                     _stateProvider.CurrentState.CurrentStateIndex = (_stateProvider.CurrentState.CurrentStateIndex + 1) % maxStateIndex;
+
                     _stateProvider.InvokeOnChanged();
                 }
             };

@@ -34,64 +34,76 @@
     </Window.Resources>
 
     <DockPanel>
-        <hc:ScrollViewer HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Hidden" Orientation="Vertical">
-            <StackPanel Orientation="Vertical" Margin="30 0" MinWidth="410">
-                <ListBox Name="GroupList" ItemsSource="{Binding Groups}" SelectedItem="{Binding Path=SelectedGroup, Mode=TwoWay}" SelectedIndex="0" TabIndex="0">
-                    <ListBox.ItemTemplate>
-                        <DataTemplate>
-                            <Grid Margin="0 10">
-                                <Grid.RowDefinitions>
-                                    <RowDefinition></RowDefinition>
-                                    <RowDefinition></RowDefinition>
-                                </Grid.RowDefinitions>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition  Width="60"></ColumnDefinition>
-                                    <ColumnDefinition  Width="120"></ColumnDefinition>
-                                    <ColumnDefinition  Width="120"></ColumnDefinition>
-                                    <ColumnDefinition></ColumnDefinition>
-                                    <ColumnDefinition></ColumnDefinition>
-                                </Grid.ColumnDefinitions>
+        <Grid>
+            <hc:ScrollViewer HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Hidden" Orientation="Vertical">
+                <StackPanel Orientation="Vertical" Margin="30 0" MinWidth="410">
+                    <ListBox Name="GroupList" ItemsSource="{Binding Groups}" SelectedItem="{Binding Path=SelectedGroup, Mode=TwoWay}" SelectedIndex="0" TabIndex="0">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <Grid Margin="0 10">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition></RowDefinition>
+                                        <RowDefinition></RowDefinition>
+                                    </Grid.RowDefinitions>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition  Width="60"></ColumnDefinition>
+                                        <ColumnDefinition  Width="120"></ColumnDefinition>
+                                        <ColumnDefinition  Width="120"></ColumnDefinition>
+                                        <ColumnDefinition></ColumnDefinition>
+                                        <ColumnDefinition></ColumnDefinition>
+                                    </Grid.ColumnDefinitions>
 
-                                <hc:NumericUpDown Grid.Row="0" Grid.Column="0" Value="{Binding StateIndex, Mode=TwoWay}" Minimum="0" Maximum="99"/>
-                                <hc:TimePicker Grid.Row="0" Grid.Column="1" Text="{Binding Start, Mode=TwoWay}"></hc:TimePicker>
-                                <hc:TimePicker Grid.Row="0" Grid.Column="2" Text="{Binding End, Mode=TwoWay}"></hc:TimePicker>
-                                <hc:TextBox Grid.Row="0" Grid.Column="3">
-                                    <TextBox.Text>
-                                        <Binding Path="Interval" Converter="{StaticResource TimeSpanConverter}">
-                                            <Binding.ValidationRules>
-                                                <controls:TimeSpanValidation></controls:TimeSpanValidation>
-                                            </Binding.ValidationRules>
-                                        </Binding>
-                                    </TextBox.Text>
-                                </hc:TextBox>
+                                    <hc:NumericUpDown Grid.Row="0" Grid.Column="0" Value="{Binding StateIndex, Mode=TwoWay}" 
+                                                  Minimum="0" Maximum="99" ToolTip="State index"/>
+                                    <hc:TimePicker Grid.Row="0" Grid.Column="1" Text="{Binding Start, Mode=TwoWay}"
+                                               ToolTip="Start time"></hc:TimePicker>
+                                    <hc:TimePicker Grid.Row="0" Grid.Column="2" Text="{Binding End, Mode=TwoWay}"
+                                               ToolTip="End time"></hc:TimePicker>
+                                    <hc:TextBox Grid.Row="0" Grid.Column="3"
+                                            ToolTip="Update interval">
+                                        <TextBox.Text>
+                                            <Binding Path="Interval" Converter="{StaticResource TimeSpanConverter}">
+                                                <Binding.ValidationRules>
+                                                    <controls:TimeSpanValidation></controls:TimeSpanValidation>
+                                                </Binding.ValidationRules>
+                                            </Binding>
+                                        </TextBox.Text>
+                                    </hc:TextBox>
 
 
-                                <CheckBox Grid.Row="1" Grid.Column="1"  IsChecked="{Binding IsRandom}">Random</CheckBox>
-                                <hc:CheckComboBox Grid.Row="1" Grid.Column="2" Grid.ColumnSpan="3" ShowClearButton="True" 
+                                    <!-- <CheckBox Grid.Row="1" Grid.Column="1"  IsChecked="{Binding IsRandom}">Random</CheckBox> -->
+                                    <hc:CheckComboBox Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="4" ShowClearButton="True" 
                                               local:CheckComBoxHelper.Attach="True"
                                               local:CheckComBoxHelper.SelectedItems="{Binding Displays,Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                               ItemsSource="{Binding ElementName=Window,Path=DataContext.AvailableDisplays}" 
-                                              ShowSelectAllButton="True"/>
-                                <Button
+                                              ShowSelectAllButton="True"
+                                              ToolTip="Displays"/>
+                                    <Button
                                     Grid.Row="0" Grid.Column="4"  
                                     Command="{Binding ElementName=Window, Path=DataContext.RemoveGroupCommand}"
                                     CommandParameter="{Binding}"
                                     HorizontalAlignment="Right" 
                                     Style="{StaticResource ButtonDanger}" FontWeight="Bold">
-                                    -
-                                </Button>
-                            </Grid>
-                        </DataTemplate>
-                    </ListBox.ItemTemplate>
-                </ListBox>
-                <Button
+                                        -
+                                    </Button>
+                                </Grid>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                    <Button
                     Command="{Binding ElementName=Window, Path=DataContext.AddGroupCommand}"
                     HorizontalAlignment="Right"
                     Style="{StaticResource ButtonSuccess}" FontWeight="Bold" Margin="5">
-                    +
-                </Button>
-            </StackPanel>
-        </hc:ScrollViewer>
+                        +
+                    </Button>
+
+                </StackPanel>
+            </hc:ScrollViewer>
+            <TextBlock Text="{Binding CurrentStateIndex}" 
+                       VerticalAlignment="Bottom" HorizontalAlignment="Left" Margin="10"
+                       ToolTip="Current state index. Press [Ctrl + Alt + F10] to change"/>
+        </Grid>
+       
         <ListBox ItemsSource="{Binding SelectedGroup.AllImages}"
                  Style="{DynamicResource WrapPanelHorizontalListBox}" 
                  HorizontalContentAlignment="Stretch" 

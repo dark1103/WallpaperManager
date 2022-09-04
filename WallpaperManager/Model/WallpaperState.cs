@@ -14,7 +14,8 @@ namespace WallpaperManager.Model
         public WallpaperGroup? Group { get; set; }
         public string? CurrentImage { get; set; }
         public Dictionary<string, DateTime> UsedImages { get; set; } = new();
-        public int CurrentStateIndex { get; set; }
+        public int CurrentStateIndex { get; 
+            set; }
 
 
         [JsonIgnore]

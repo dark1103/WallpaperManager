@@ -18,6 +18,7 @@ namespace WallpaperManager.ViewModel
     public class ApplicationViewModel : INotifyPropertyChanged, IWallpaperGroupsProvider
     {
         private readonly IWallpaperGroupsProvider _wallpaperGroupsProvider;
+        private readonly IStateProvider _stateProvider;
         public ICommand RemovePathCommand { get; }
         public ICommand AddFileCommand { get; }
         public ICommand AddFolderCommand { get; }
@@ -60,7 +61,6 @@ namespace WallpaperManager.ViewModel
                 {
                     var obj = args.Data as DataObject;
 
-                    //get fileName of file saved on disk
                     var fileNames = obj?.GetFileDropList();
 
                     if (fileNames != null && SelectedGroup != null)
@@ -80,6 +80,7 @@ namespace WallpaperManager.ViewModel
             }
         }
 
+        public int CurrentStateIndex => _stateProvider.CurrentState.CurrentStateIndex;
         public ObservableCollection<WallpaperGroup> Groups { get; }
 
         IEnumerable<WallpaperGroup> IWallpaperGroupsProvider.Groups
@@ -136,16 +137,19 @@ namespace WallpaperManager.ViewModel
                     Paths = new List<string>(){ }
                 }
             }
-        })
+        }, new StateProvider(){CurrentState = {  }})
         {
             
         }
 
-        public ApplicationViewModel(IWallpaperGroupsProvider wallpaperGroupsProvider)
+        public ApplicationViewModel(IWallpaperGroupsProvider wallpaperGroupsProvider, IStateProvider stateProvider)
         {
             _wallpaperGroupsProvider = wallpaperGroupsProvider;
+            _stateProvider = stateProvider;
 
             Groups = new ObservableCollection<WallpaperGroup>(_wallpaperGroupsProvider.Groups);
+
+            _stateProvider.OnStateChanged += state => OnPropertyChanged(nameof(CurrentStateIndex));
 
             if (Groups.Any())
                 SelectedGroup = Groups.First();
@@ -156,7 +160,6 @@ namespace WallpaperManager.ViewModel
             }
 
             RemovePathCommand = new RemovePathCommand(GroupsChanged);
-
             AddFileCommand = new AddFileCommand(GroupsChanged);
             AddFolderCommand = new AddFolderCommand(GroupsChanged);
             AddGroupCommand = new AddGroupCommand(this, GroupsChanged);
