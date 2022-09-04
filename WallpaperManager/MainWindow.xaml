@@ -98,7 +98,16 @@
             <ListBox.ItemTemplate>
                 <DataTemplate>
                     <Border Width="300" Height="300" Margin="10" VerticalAlignment="Stretch" Background="Transparent">
-                        <Image Source="{Binding Item1, Converter={StaticResource StringToImageSourceConverter}, IsAsync=True}" ToolTip="{Binding Item2}"></Image>
+                        <Image Source="{Binding Item1, Converter={StaticResource StringToImageSourceConverter}, IsAsync=True}" 
+                               ToolTip="{Binding Item2}">
+                            <Image.InputBindings>
+                                <MouseBinding 
+                                    Gesture="LeftDoubleClick" 
+                                    Command="{Binding ElementName=Window, Path=DataContext.OpenImageCommand}"
+                                    CommandParameter="{Binding Item1}">
+                                </MouseBinding>
+                            </Image.InputBindings>
+                        </Image>
                     </Border>
                 </DataTemplate>
             </ListBox.ItemTemplate>

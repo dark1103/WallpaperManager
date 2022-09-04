@@ -14,7 +14,7 @@ namespace WallpaperManager.Services
         private readonly IWallpaperGroupsProvider _wallpaperGroupsProvider;
         private readonly IStateProvider _stateProvider;
 
-        private readonly CancellationTokenSource _delayCancellationTokenSource = new CancellationTokenSource();
+        private CancellationTokenSource _delayCancellationTokenSource;
 
         public WallpaperUpdateService(IWallpaperGroupsProvider wallpaperGroupsProvider, IStateProvider stateProvider)
         {
@@ -23,7 +23,7 @@ namespace WallpaperManager.Services
 
             _wallpaperGroupsProvider.OnDataChanged += () =>
             {
-                _delayCancellationTokenSource.Cancel(false);
+                _delayCancellationTokenSource?.Cancel();
             };
         }
 
@@ -73,6 +73,8 @@ namespace WallpaperManager.Services
                         UpdateWallpaper(state.Group, out intervalDelay);
                     }
                 }
+
+                _delayCancellationTokenSource = new CancellationTokenSource();
 
                 await Task.Delay((int)Math.Min(intervalDelay, timeDelay), _delayCancellationTokenSource.Token).ContinueWith(tsk => { });
             }

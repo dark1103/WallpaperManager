@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Windows;
@@ -35,6 +36,17 @@ namespace WallpaperManager.ViewModel
                     OnPropertyChanged(nameof(SelectedGroup));
 
                     GC.Collect();
+                });
+            }
+        }
+
+        public ICommand OpenImageCommand
+        {
+            get
+            {
+                return new RelayCommand<string>((arg) =>
+                {
+                    Process.Start(new ProcessStartInfo(arg) { UseShellExecute = true });
                 });
             }
         }

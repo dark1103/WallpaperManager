@@ -28,7 +28,6 @@ namespace WallpaperManager.ViewModel
                 return new RelayCommand<CancelEventArgs>((args) => {
                     var mainWindow = new MainWindow();
                     mainWindow.DataContext = _applicationViewModelAccessor();
-
                     mainWindow.Show();
                 });
             }
