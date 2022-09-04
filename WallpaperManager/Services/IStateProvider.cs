@@ -10,5 +10,7 @@ namespace WallpaperManager.Services
     internal interface IStateProvider
     {
         WallpaperState CurrentState { get; }
+        event Action<WallpaperState> OnStateChanged;
+        void InvokeOnChanged();
     }
 }

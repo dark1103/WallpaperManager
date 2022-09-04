@@ -45,15 +45,17 @@
                                     <RowDefinition></RowDefinition>
                                 </Grid.RowDefinitions>
                                 <Grid.ColumnDefinitions>
+                                    <ColumnDefinition  Width="60"></ColumnDefinition>
                                     <ColumnDefinition  Width="120"></ColumnDefinition>
                                     <ColumnDefinition  Width="120"></ColumnDefinition>
                                     <ColumnDefinition></ColumnDefinition>
                                     <ColumnDefinition></ColumnDefinition>
                                 </Grid.ColumnDefinitions>
 
-                                <hc:TimePicker Grid.Row="0" Grid.Column="0" Text="{Binding Start, Mode=TwoWay}"></hc:TimePicker>
-                                <hc:TimePicker Grid.Row="0" Grid.Column="1" Text="{Binding End, Mode=TwoWay}"></hc:TimePicker>
-                                <hc:TextBox Grid.Row="0" Grid.Column="2">
+                                <hc:NumericUpDown Grid.Row="0" Grid.Column="0" Value="{Binding StateIndex, Mode=TwoWay}"/>
+                                <hc:TimePicker Grid.Row="0" Grid.Column="1" Text="{Binding Start, Mode=TwoWay}"></hc:TimePicker>
+                                <hc:TimePicker Grid.Row="0" Grid.Column="2" Text="{Binding End, Mode=TwoWay}"></hc:TimePicker>
+                                <hc:TextBox Grid.Row="0" Grid.Column="3">
                                     <TextBox.Text>
                                         <Binding Path="Interval" Converter="{StaticResource TimeSpanConverter}">
                                             <Binding.ValidationRules>
@@ -64,14 +66,14 @@
                                 </hc:TextBox>
 
 
-                                <CheckBox Grid.Row="1" Grid.Column="0"  IsChecked="{Binding IsRandom}">Random</CheckBox>
-                                <hc:CheckComboBox Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" Width="220" ShowClearButton="True" MaxWidth="380" 
+                                <CheckBox Grid.Row="1" Grid.Column="1"  IsChecked="{Binding IsRandom}">Random</CheckBox>
+                                <hc:CheckComboBox Grid.Row="1" Grid.Column="2" Grid.ColumnSpan="3" ShowClearButton="True" 
                                               local:CheckComBoxHelper.Attach="True"
                                               local:CheckComBoxHelper.SelectedItems="{Binding Displays,Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                               ItemsSource="{Binding ElementName=Window,Path=DataContext.AvailableDisplays}" 
                                               ShowSelectAllButton="True"/>
                                 <Button
-                                    Grid.Row="0" Grid.Column="3"  
+                                    Grid.Row="0" Grid.Column="4"  
                                     Command="{Binding ElementName=Window, Path=DataContext.RemoveGroupCommand}"
                                     CommandParameter="{Binding}"
                                     HorizontalAlignment="Right">

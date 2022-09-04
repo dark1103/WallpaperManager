@@ -126,9 +126,18 @@ namespace WallpaperManager.ViewModel
             }
         }
 
-        public ApplicationViewModel() : this(new WallpaperGroupsProvider())
+        public ApplicationViewModel() : this(new WallpaperGroupsProvider()
         {
-
+            Groups = new[]
+            {
+                new WallpaperGroup()
+                {
+                    Paths = new List<string>(){ }
+                }
+            }
+        })
+        {
+            
         }
 
         public ApplicationViewModel(IWallpaperGroupsProvider wallpaperGroupsProvider)

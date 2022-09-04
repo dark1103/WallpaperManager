@@ -18,18 +18,24 @@ namespace WallpaperManager.Services
         {
             if (File.Exists(Filename))
             {
-                CurrentState = JsonConvert.DeserializeObject<WallpaperState>(File.ReadAllText(Filename));
+                CurrentState = JsonConvert.DeserializeObject<WallpaperState>(File.ReadAllText(Filename))!;
             }
             else
             {
                 CurrentState = new WallpaperState();
             }
 
-            CurrentState.OnChanged += state =>
+            OnStateChanged += state =>
             {
                 var json = JsonConvert.SerializeObject(state);
                 File.WriteAllText(Filename, json);
             };
+        }
+
+        public event Action<WallpaperState> OnStateChanged = delegate { };
+        public void InvokeOnChanged()
+        {
+            OnStateChanged(CurrentState);
         }
     }
 }

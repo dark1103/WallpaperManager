@@ -13,6 +13,7 @@ namespace WallpaperManager.Model
         [JsonIgnore]
         static readonly string[] Filter = new[] { ".jpg", ".jpeg", ".png", ".bmp" };
 
+        public int StateIndex { get; set; }
         public TimeSpan Start { get; set; }
         public TimeSpan End { get; set; }
         public bool IsRandom { get; set; }

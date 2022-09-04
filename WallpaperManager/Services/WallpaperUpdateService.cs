@@ -14,7 +14,7 @@ namespace WallpaperManager.Services
         private readonly IWallpaperGroupsProvider _wallpaperGroupsProvider;
         private readonly IStateProvider _stateProvider;
 
-        private CancellationTokenSource _delayCancellationTokenSource;
+        private CancellationTokenSource? _delayCancellationTokenSource;
 
         public WallpaperUpdateService(IWallpaperGroupsProvider wallpaperGroupsProvider, IStateProvider stateProvider)
         {
@@ -22,6 +22,11 @@ namespace WallpaperManager.Services
             _stateProvider = stateProvider;
 
             _wallpaperGroupsProvider.OnDataChanged += () =>
+            {
+                _delayCancellationTokenSource?.Cancel();
+            };
+
+            _stateProvider.OnStateChanged += state =>
             {
                 _delayCancellationTokenSource?.Cancel();
             };
@@ -36,9 +41,9 @@ namespace WallpaperManager.Services
         {
             while (true)
             {
-                var currentDisplay = Display.GetDisplays().FirstOrDefault(x => x.IsGDIPrimary)?.ToPathDisplayTarget().FriendlyName;
+                string? currentDisplay = Display.GetDisplays().FirstOrDefault(x => x.IsGDIPrimary)?.ToPathDisplayTarget().FriendlyName;
 
-                var newWallpaperGroup = GetNewWallpaperGroup(_wallpaperGroupsProvider.Groups, DateTime.Now, currentDisplay);
+                var newWallpaperGroup = GetNewWallpaperGroup(_wallpaperGroupsProvider.Groups, DateTime.Now, currentDisplay, _stateProvider.CurrentState.CurrentStateIndex);
 
                 double intervalDelay = double.MaxValue;
 
@@ -68,7 +73,9 @@ namespace WallpaperManager.Services
                 {
                     var state = _stateProvider.CurrentState;
 
-                    if (state.Group.Interval > TimeSpan.Zero && (DateTime.Now - state.StartTime) > state.Group.Interval)
+                    DateTime startTime = state.UsedImages[state.CurrentImage];
+
+                    if (state.Group.Interval > TimeSpan.Zero && (DateTime.Now - startTime) > state.Group.Interval)
                     {
                         UpdateWallpaper(state.Group, out intervalDelay);
                     }
@@ -84,7 +91,6 @@ namespace WallpaperManager.Services
         {
             var state = _stateProvider.CurrentState;
             state.Group = wallpaperGroup;
-            state.StartTime = DateTime.Now;
 
             var allImages = wallpaperGroup.AllImages.Select(x => x.Item1).ToList();
 
@@ -105,8 +111,9 @@ namespace WallpaperManager.Services
 
             if (wallpaperGroup.IsRandom)
             {
-                var unfinishedImage = state.UsedImages.FirstOrDefault(x => DateTime.Now - x.Value < wallpaperGroup.Interval).Key;
+                var unfinishedImage = state.UsedImages.FirstOrDefault(x => DateTime.Now - x.Value < wallpaperGroup.Interval && allImages.Contains(x.Key)).Key;
 
+                // ReSharper disable once NullCoalescingConditionIsAlwaysNotNullAccordingToAPIContract
                 newImage = unfinishedImage ?? images[Random.Shared.Next(images.Count)];
             }
             else
@@ -116,6 +123,8 @@ namespace WallpaperManager.Services
 
             WallpaperWindowsApi.Set(newImage, WallpaperWindowsApi.Style.Span);
 
+            state.CurrentImage = newImage;
+
             if (!state.UsedImages.ContainsKey(newImage))
             {
                 state.UsedImages.Add(newImage, DateTime.Now);
@@ -123,13 +132,18 @@ namespace WallpaperManager.Services
 
             updateDelay = wallpaperGroup.Interval != TimeSpan.Zero ? wallpaperGroup.Interval.TotalMilliseconds : double.MaxValue;
 
-            state.InvokeOnChanged();
+            _stateProvider.InvokeOnChanged();
         }
 
-        private WallpaperGroup? GetNewWallpaperGroup(IEnumerable<WallpaperGroup> wallpaperGroups, DateTime now, string currentDisplay)
+        private WallpaperGroup? GetNewWallpaperGroup(IEnumerable<WallpaperGroup> wallpaperGroups, DateTime now, string? currentDisplay, int currentStateIndex)
         {
-            return wallpaperGroups.FirstOrDefault(x=> (x.Start == x.End || x.Start < x.End ? (now.TimeOfDay >= x.Start && now.TimeOfDay < x.End) : (now.TimeOfDay <= x.Start && now.TimeOfDay > x.End)) 
-                                                      && x.Displays?.Any() != true || x.Displays?.Contains(currentDisplay) != false);
+            return wallpaperGroups.FirstOrDefault(x=> 
+                x.StateIndex == currentStateIndex 
+                && (x.Start == x.End 
+                    || (x.Start < x.End 
+                        ? (now.TimeOfDay >= x.Start && now.TimeOfDay < x.End) 
+                        : (now.TimeOfDay <= x.Start && now.TimeOfDay > x.End)))
+                && (x.Displays?.Any() != true || x.Displays?.Contains(currentDisplay!) != false));
         }
     }
 }

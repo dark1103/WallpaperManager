@@ -27,6 +27,7 @@ namespace WallpaperManager
                     services.AddSingleton<IWallpaperGroupsProvider, WallpaperGroupsProvider>();
                     services.AddSingleton<IStateProvider, StateProvider>();
                     services.AddSingleton<WallpaperUpdateService>();
+                    services.AddSingleton<KeyboardHookService>();
 
                     services.AddTransient<ApplicationViewModel>();
                     services.AddTransient(x=>new TrayViewModel(x.GetRequiredService<ApplicationViewModel>));
@@ -38,16 +39,13 @@ namespace WallpaperManager
         {
             _host.Start();
 
-            // MainWindow = new MainWindow();
-            // MainWindow.DataContext = _host.Services.GetService<ApplicationViewModel>();
-
             _host.Services.GetService<WallpaperUpdateService>()!.RunTask();
+            _host.Services.GetService<KeyboardHookService>()!.Hook();
 
             MainWindow = new TrayWindow()
             {
                 DataContext = _host.Services.GetService<TrayViewModel>()
             };
-
 
             base.OnStartup(e);
         }

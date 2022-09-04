@@ -12,14 +12,12 @@ namespace WallpaperManager.Model
     {
         [JsonIgnore]
         public WallpaperGroup? Group { get; set; }
-        public DateTime StartTime { get; set; }
+        public string? CurrentImage { get; set; }
         public Dictionary<string, DateTime> UsedImages { get; set; } = new();
+        public int CurrentStateIndex { get; set; }
 
 
-        public event Action<WallpaperState> OnChanged = delegate {  };
-        public void InvokeOnChanged()
-        {
-            OnChanged(this);
-        }
+        [JsonIgnore]
+        public DateTime? StartTime => CurrentImage != null ? UsedImages[CurrentImage] : null;
     }
 }
