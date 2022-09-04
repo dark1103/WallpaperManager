@@ -35,6 +35,11 @@ namespace WallpaperManager.Services
 
         public void RunTask()
         {
+            Microsoft.Win32.SystemEvents.SessionSwitch += (sender, args) =>
+            {
+                _delayCancellationTokenSource?.Cancel();
+            };
+
             Task.Run(Run);
         }
 
@@ -44,7 +49,7 @@ namespace WallpaperManager.Services
             {
                 string? currentDisplay = Display.GetDisplays().FirstOrDefault(x => x.IsGDIPrimary)?.ToPathDisplayTarget().FriendlyName;
 
-                var newWallpaperGroup = GetNewWallpaperGroup(_wallpaperGroupsProvider.Groups, DateTime.Now, currentDisplay, _stateProvider.CurrentState.CurrentStateIndex);
+                var newWallpaperGroup = GetNewWallpaperGroup(_wallpaperGroupsProvider.Groups, DateTime.Now, currentDisplay, _stateProvider.CurrentState.CurrentStateIndex, System.Windows.SystemParameters.IsRemoteSession);
 
                 double intervalDelay = double.MaxValue;
 
@@ -93,7 +98,7 @@ namespace WallpaperManager.Services
             }
         }
 
-        private void UpdateWallpaper(WallpaperGroup wallpaperGroup, out double updateDelay)
+        protected virtual void UpdateWallpaper(WallpaperGroup wallpaperGroup, out double updateDelay)
         {
             var state = _stateProvider.CurrentState;
             state.Group = wallpaperGroup;
@@ -141,11 +146,12 @@ namespace WallpaperManager.Services
             _stateProvider.InvokeOnChanged();
         }
 
-        private WallpaperGroup? GetNewWallpaperGroup(IEnumerable<WallpaperGroup> wallpaperGroups, DateTime now, string? currentDisplay, int currentStateIndex)
+        protected virtual WallpaperGroup? GetNewWallpaperGroup(IEnumerable<WallpaperGroup> wallpaperGroups, DateTime now, string? currentDisplay, int currentStateIndex, bool isRemoteSession)
         {
             return wallpaperGroups.FirstOrDefault(x=> 
-                x.StateIndex == currentStateIndex 
+                x.StateIndex == -1 || x.StateIndex == currentStateIndex 
                 && x.AllImages.Any()
+                && (!isRemoteSession || x.AllowRDP)
                 && (x.Start == x.End 
                     || (x.Start < x.End 
                         ? (now.TimeOfDay >= x.Start && now.TimeOfDay < x.End) 

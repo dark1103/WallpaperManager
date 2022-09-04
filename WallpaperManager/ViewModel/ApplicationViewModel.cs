@@ -183,14 +183,7 @@ namespace WallpaperManager.ViewModel
 
             if (propertyName == nameof(Groups))
             {
-                if (Groups.Any())
-                {
-                    if (!Groups.Contains(SelectedGroup))
-                    {
-                        SelectedGroup = Groups.First();
-                    }
-                }
-                else
+                if (!Groups.Any() || !Groups.Contains(SelectedGroup))
                 {
                     SelectedGroup = null;
                 }

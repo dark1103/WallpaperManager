@@ -31,6 +31,11 @@ namespace WallpaperManager.Services
                 {
                     var maxStateIndex = _wallpaperGroupsProvider.Groups.Max(x => x.StateIndex) + 1;
 
+                    if (maxStateIndex < 2 && _wallpaperGroupsProvider.Groups.Any(x=>x.StateIndex == -1))
+                    {
+                        maxStateIndex++;
+                    }
+
                     _stateProvider.CurrentState.CurrentStateIndex = (_stateProvider.CurrentState.CurrentStateIndex + 1) % maxStateIndex;
 
                     _stateProvider.InvokeOnChanged();

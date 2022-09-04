@@ -13,10 +13,12 @@ namespace WallpaperManager.Model
         [JsonIgnore]
         static readonly string[] Filter = new[] { ".jpg", ".jpeg", ".png", ".bmp" };
 
+        public bool AllowRDP { get; set; } = true;
+        public bool IsRandom { get; set; } = true;
+
         public int StateIndex { get; set; }
         public TimeSpan Start { get; set; }
         public TimeSpan End { get; set; }
-        public bool IsRandom { get; set; } = true;
         public TimeSpan Interval { get; set; }
 
         public List<string>? Displays { get; set; }
