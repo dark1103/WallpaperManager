@@ -148,7 +148,7 @@ namespace WallpaperManager.Services
                 && (x.Start == x.End 
                     || (x.Start < x.End 
                         ? (now.TimeOfDay >= x.Start && now.TimeOfDay < x.End) 
-                        : (now.TimeOfDay <= x.Start && now.TimeOfDay > x.End)))
+                        : (now.TimeOfDay <= x.Start || now.TimeOfDay > x.End)))
                 && (x.Displays?.Any() != true || x.Displays?.Contains(currentDisplay!) != false));
         }
     }

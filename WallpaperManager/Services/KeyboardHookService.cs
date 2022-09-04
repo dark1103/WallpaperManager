@@ -13,7 +13,7 @@ namespace WallpaperManager.Services
         private readonly IStateProvider _stateProvider;
         private readonly IWallpaperGroupsProvider _wallpaperGroupsProvider;
 
-
+        private KeyboardHook? _keyboardHook;
         public KeyboardHookService(IStateProvider stateProvider, IWallpaperGroupsProvider wallpaperGroupsProvider)
         {
             _stateProvider = stateProvider;
@@ -22,8 +22,8 @@ namespace WallpaperManager.Services
 
         public void Hook()
         {
-            var keyboardHook = new KeyboardHook();
-            keyboardHook.KeyboardPressed += (sender, args) =>
+            _keyboardHook = new KeyboardHook();
+            _keyboardHook.KeyboardPressed += (sender, args) =>
             {
                 if (args.InputEvent.Key == Key.F10 && Keyboard.IsKeyDown(Key.LeftAlt) && Keyboard.IsKeyDown(Key.LeftCtrl))
                 {
