@@ -30,26 +30,11 @@ namespace WallpaperManager.ViewModel
                 {
                     _wallpaperGroupsProvider.Groups = Groups;
                     _wallpaperGroupsProvider.SaveChanges();
-                });
-            }
-        }
 
-        public ICommand ExitCommand
-        {
-            get
-            {
-                return new RelayCommand<CancelEventArgs>((args) => {
-                    App.Current.Shutdown();
-                });
-            }
-        }
+                    SelectedGroup = null;
+                    OnPropertyChanged(nameof(SelectedGroup));
 
-        public ICommand OpenCommand
-        {
-            get
-            {
-                return new RelayCommand<CancelEventArgs>((args) => {
-                    App.Current.MainWindow.Show();
+                    GC.Collect();
                 });
             }
         }
@@ -92,15 +77,19 @@ namespace WallpaperManager.ViewModel
         public void AddGroup(WallpaperGroup wallpaperGroup)
         {
             Groups.Add(wallpaperGroup);
+            OnDataChanged();
         }
         public void RemoveGroup(WallpaperGroup wallpaperGroup)
         {
             Groups.Remove(wallpaperGroup);
+            OnDataChanged();
         }
         public void SaveChanges()
         {
             throw new NotImplementedException();
         }
+
+        public event Action OnDataChanged = delegate {  };
 
 
         private WallpaperGroup? _selectedGroup;

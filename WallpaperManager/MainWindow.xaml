@@ -7,9 +7,9 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:hc="https://handyorg.github.io/handycontrol"
         xmlns:local="clr-namespace:WallpaperManager"
-        xmlns:data="clr-namespace:WallpaperManager.Data"
         xmlns:viewModel="clr-namespace:WallpaperManager.ViewModel"
         xmlns:tb="http://www.hardcodet.net/taskbar"
+        xmlns:controls="clr-namespace:WallpaperManager.Controls"
         mc:Ignorable="d"
         AllowDrop="True"
         FocusManager.FocusedElement="{Binding ElementName=GroupList}"
@@ -27,27 +27,13 @@
         <viewModel:ApplicationViewModel/>
     </Window.DataContext>
     <Window.Resources>
-        <data:TimeSpanConverter x:Key="TimeSpanConverter"/>
-        <data:TimeSpanValidation x:Key="TimeSpanValidation"/>
-        <data:ArrayConverter x:Key="ArrayConverter"/>
+        <controls:TimeSpanConverter x:Key="TimeSpanConverter"/>
+        <controls:TimeSpanValidation x:Key="TimeSpanValidation"/>
+        <controls:ArrayConverter x:Key="ArrayConverter"/>
+        <controls:StringToImageSourceConverter x:Key="StringToImageSourceConverter" />
     </Window.Resources>
 
     <DockPanel>
-        <tb:TaskbarIcon
-                        Visibility="Visible"
-                        ToolTipText="Wallpaper Manager"
-                        MenuActivation="LeftOrRightClick"
-                        PopupActivation="DoubleClick"
-                        IconSource="wallpaper.ico"
-                        DoubleClickCommand="{Binding OpenCommand}">
-            <tb:TaskbarIcon.ContextMenu>
-                <ContextMenu>
-                    <MenuItem Header="Settings" Command="{Binding OpenCommand}" />
-                    <MenuItem Header="Exit" Command="{Binding ExitCommand}" />
-                </ContextMenu>
-            </tb:TaskbarIcon.ContextMenu>
-        </tb:TaskbarIcon>
-
         <hc:ScrollViewer HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Hidden" Orientation="Vertical">
             <StackPanel Orientation="Vertical" Margin="30 0">
                 <ListBox Name="GroupList" ItemsSource="{Binding Groups}" SelectedItem="{Binding Path=SelectedGroup, Mode=TwoWay}" SelectedIndex="0" TabIndex="0">
@@ -71,7 +57,7 @@
                                     <TextBox.Text>
                                         <Binding Path="Interval" Converter="{StaticResource TimeSpanConverter}">
                                             <Binding.ValidationRules>
-                                                <data:TimeSpanValidation></data:TimeSpanValidation>
+                                                <controls:TimeSpanValidation></controls:TimeSpanValidation>
                                             </Binding.ValidationRules>
                                         </Binding>
                                     </TextBox.Text>
@@ -112,7 +98,7 @@
             <ListBox.ItemTemplate>
                 <DataTemplate>
                     <Border Width="300" Height="300" Margin="10" VerticalAlignment="Stretch" Background="Transparent">
-                        <Image Source="{Binding Item1}" ToolTip="{Binding Item2}"></Image>
+                        <Image Source="{Binding Item1, Converter={StaticResource StringToImageSourceConverter}, IsAsync=True}" ToolTip="{Binding Item2}"></Image>
                     </Border>
                 </DataTemplate>
             </ListBox.ItemTemplate>

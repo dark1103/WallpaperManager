@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.IO.Enumeration;
 using System.Linq;
@@ -19,7 +20,11 @@ namespace WallpaperManager.Services
         public IEnumerable<WallpaperGroup> Groups
         {
             get => _groupsData.Groups;
-            set => _groupsData.Groups = value.ToList();
+            set
+            {
+                _groupsData.Groups = value.ToList();
+                OnDataChanged();
+            }
         }
 
 
@@ -33,41 +38,18 @@ namespace WallpaperManager.Services
             {
                 _groupsData = new WallpaperGroupsData();
             }
-
-            // _groupsList = new List<WallpaperGroup>()
-            // {
-            //     new WallpaperGroup()
-            //     {
-            //         Start = TimeSpan.Parse("11:30"),
-            //         End = TimeSpan.Parse("12:40"),
-            //         Paths = new List<string>()
-            //         {
-            //             "C:\\Users\\1\\YandexDisk\\Изображения\\Аниме\\FZ_jwwcacAASWSA.jpg",
-            //             "C:\\Users\\1\\YandexDisk\\Изображения\\Аниме\\FKLjprhVQAId9HE.jpg",
-            //             "C:\\Users\\1\\YandexDisk\\Изображения\\Аниме\\Фигурки",
-            //         }
-            //     },
-            //     new WallpaperGroup()
-            //     {
-            //         Start = TimeSpan.Parse("15:30"),
-            //         End = TimeSpan.Parse("17:40")
-            //     },
-            //     new WallpaperGroup()
-            //     {
-            //         Start = TimeSpan.Parse("19:30"),
-            //         End = TimeSpan.Parse("22:40")
-            //     }
-            // };
         }
 
         public void AddGroup(WallpaperGroup wallpaperGroup)
         {
             _groupsData.Groups.Add(wallpaperGroup);
+            OnDataChanged();
         }
 
         public void RemoveGroup(WallpaperGroup wallpaperGroup)
         {
             _groupsData.Groups.Remove(wallpaperGroup);
+            OnDataChanged();
         }
 
         public void SaveChanges()
@@ -75,5 +57,7 @@ namespace WallpaperManager.Services
             var json = JsonConvert.SerializeObject(_groupsData);
             File.WriteAllText(Filename, json);
         }
+
+        public event Action OnDataChanged = delegate {  };
     }
 }

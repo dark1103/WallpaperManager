@@ -14,5 +14,7 @@ namespace WallpaperManager.Services
         void AddGroup(WallpaperGroup wallpaperGroup);
         void RemoveGroup(WallpaperGroup wallpaperGroup);
         void SaveChanges();
+
+        public event Action OnDataChanged;
     }
 }

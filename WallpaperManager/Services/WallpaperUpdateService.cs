@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using WallpaperManager.Model;
 using WindowsDisplayAPI;
@@ -13,10 +14,17 @@ namespace WallpaperManager.Services
         private readonly IWallpaperGroupsProvider _wallpaperGroupsProvider;
         private readonly IStateProvider _stateProvider;
 
+        private readonly CancellationTokenSource _delayCancellationTokenSource = new CancellationTokenSource();
+
         public WallpaperUpdateService(IWallpaperGroupsProvider wallpaperGroupsProvider, IStateProvider stateProvider)
         {
             _wallpaperGroupsProvider = wallpaperGroupsProvider;
             _stateProvider = stateProvider;
+
+            _wallpaperGroupsProvider.OnDataChanged += () =>
+            {
+                _delayCancellationTokenSource.Cancel(false);
+            };
         }
 
         public void RunTask()
@@ -32,10 +40,29 @@ namespace WallpaperManager.Services
 
                 var newWallpaperGroup = GetNewWallpaperGroup(_wallpaperGroupsProvider.Groups, DateTime.Now, currentDisplay);
 
+                double intervalDelay = double.MaxValue;
+
                 if (newWallpaperGroup != null && _stateProvider.CurrentState.Group != newWallpaperGroup)
                 {
-                    UpdateWallpaper(newWallpaperGroup);
+                    UpdateWallpaper(newWallpaperGroup, out intervalDelay);
                 }
+
+                double timeDelay = _wallpaperGroupsProvider.Groups.Min(x =>
+                {
+                    double min = (TimeSpan.FromDays(1) - DateTime.Now.TimeOfDay).TotalMilliseconds;
+
+                    if (x.End > DateTime.Now.TimeOfDay)
+                    {
+                        min = Math.Min(min, (x.End - DateTime.Now.TimeOfDay).TotalMilliseconds);
+                    }
+
+                    if (x.Start > DateTime.Now.TimeOfDay)
+                    {
+                        min = Math.Min(min, (x.Start - DateTime.Now.TimeOfDay).TotalMilliseconds);
+                    }
+
+                    return min;
+                });
 
                 if (_stateProvider.CurrentState.Group != null)
                 {
@@ -43,15 +70,15 @@ namespace WallpaperManager.Services
 
                     if (state.Group.Interval > TimeSpan.Zero && (DateTime.Now - state.StartTime) > state.Group.Interval)
                     {
-                        UpdateWallpaper(state.Group);
+                        UpdateWallpaper(state.Group, out intervalDelay);
                     }
                 }
 
-                await Task.Delay(5000);
+                await Task.Delay((int)Math.Min(intervalDelay, timeDelay), _delayCancellationTokenSource.Token).ContinueWith(tsk => { });
             }
         }
 
-        private void UpdateWallpaper(WallpaperGroup wallpaperGroup)
+        private void UpdateWallpaper(WallpaperGroup wallpaperGroup, out double updateDelay)
         {
             var state = _stateProvider.CurrentState;
             state.Group = wallpaperGroup;
@@ -91,6 +118,8 @@ namespace WallpaperManager.Services
             {
                 state.UsedImages.Add(newImage, DateTime.Now);
             }
+
+            updateDelay = wallpaperGroup.Interval != TimeSpan.Zero ? wallpaperGroup.Interval.TotalMilliseconds : double.MaxValue;
 
             state.InvokeOnChanged();
         }

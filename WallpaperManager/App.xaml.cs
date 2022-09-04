@@ -29,6 +29,7 @@ namespace WallpaperManager
                     services.AddSingleton<WallpaperUpdateService>();
 
                     services.AddTransient<ApplicationViewModel>();
+                    services.AddTransient(x=>new TrayViewModel(x.GetRequiredService<ApplicationViewModel>));
                 })
                 .Build();
         }
@@ -37,17 +38,15 @@ namespace WallpaperManager
         {
             _host.Start();
 
-            MainWindow = new MainWindow();
-            MainWindow.DataContext = _host.Services.GetService<ApplicationViewModel>();
-            MainWindow.Closing += (sender, args) =>
-            {
-                args.Cancel = true;
-                MainWindow.Hide();
-            };
+            // MainWindow = new MainWindow();
+            // MainWindow.DataContext = _host.Services.GetService<ApplicationViewModel>();
 
             _host.Services.GetService<WallpaperUpdateService>()!.RunTask();
 
-            // MainWindow.Show();
+            MainWindow = new TrayWindow()
+            {
+                DataContext = _host.Services.GetService<TrayViewModel>()
+            };
 
 
             base.OnStartup(e);
