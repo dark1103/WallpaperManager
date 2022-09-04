@@ -52,7 +52,7 @@
                                     <ColumnDefinition></ColumnDefinition>
                                 </Grid.ColumnDefinitions>
 
-                                <hc:NumericUpDown Grid.Row="0" Grid.Column="0" Value="{Binding StateIndex, Mode=TwoWay}"/>
+                                <hc:NumericUpDown Grid.Row="0" Grid.Column="0" Value="{Binding StateIndex, Mode=TwoWay}" Minimum="0" Maximum="99"/>
                                 <hc:TimePicker Grid.Row="0" Grid.Column="1" Text="{Binding Start, Mode=TwoWay}"></hc:TimePicker>
                                 <hc:TimePicker Grid.Row="0" Grid.Column="2" Text="{Binding End, Mode=TwoWay}"></hc:TimePicker>
                                 <hc:TextBox Grid.Row="0" Grid.Column="3">
