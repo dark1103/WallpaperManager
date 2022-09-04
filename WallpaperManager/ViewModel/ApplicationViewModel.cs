@@ -179,10 +179,18 @@ namespace WallpaperManager.ViewModel
 
             if (propertyName == nameof(Groups))
             {
-                if (!Groups.Contains(SelectedGroup))
+                if (Groups.Any())
                 {
-                    SelectedGroup = Groups.First();
+                    if (!Groups.Contains(SelectedGroup))
+                    {
+                        SelectedGroup = Groups.First();
+                    }
                 }
+                else
+                {
+                    SelectedGroup = null;
+                }
+
                 OnPropertyChanged(nameof(SelectedGroup));
             }
         }

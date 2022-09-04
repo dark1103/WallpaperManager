@@ -52,22 +52,27 @@ namespace WallpaperManager.Services
                     UpdateWallpaper(newWallpaperGroup, out intervalDelay);
                 }
 
-                double timeDelay = _wallpaperGroupsProvider.Groups.Min(x =>
+                double timeDelay = (TimeSpan.FromDays(1) - DateTime.Now.TimeOfDay).TotalMilliseconds;
+
+                if (_wallpaperGroupsProvider.Groups.Any())
                 {
-                    double min = (TimeSpan.FromDays(1) - DateTime.Now.TimeOfDay).TotalMilliseconds;
-
-                    if (x.End > DateTime.Now.TimeOfDay)
+                    timeDelay = _wallpaperGroupsProvider.Groups.Min(x =>
                     {
-                        min = Math.Min(min, (x.End - DateTime.Now.TimeOfDay).TotalMilliseconds);
-                    }
+                        double min = timeDelay;
 
-                    if (x.Start > DateTime.Now.TimeOfDay)
-                    {
-                        min = Math.Min(min, (x.Start - DateTime.Now.TimeOfDay).TotalMilliseconds);
-                    }
+                        if (x.End > DateTime.Now.TimeOfDay)
+                        {
+                            min = Math.Min(min, (x.End - DateTime.Now.TimeOfDay).TotalMilliseconds);
+                        }
 
-                    return min;
-                });
+                        if (x.Start > DateTime.Now.TimeOfDay)
+                        {
+                            min = Math.Min(min, (x.Start - DateTime.Now.TimeOfDay).TotalMilliseconds);
+                        }
+
+                        return min;
+                    });
+                }
 
                 if (_stateProvider.CurrentState.Group != null)
                 {
