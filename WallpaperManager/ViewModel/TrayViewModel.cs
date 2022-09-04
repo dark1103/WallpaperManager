@@ -26,14 +26,23 @@ namespace WallpaperManager.ViewModel
             get
             {
                 return new RelayCommand<CancelEventArgs>((args) => {
-                    var mainWindow = new MainWindow();
-                    mainWindow.DataContext = _applicationViewModelAccessor();
-                    mainWindow.Show();
+                    if (App.Current.MainWindow == null)
+                    {
+                        var mainWindow = new MainWindow();
+                        App.Current.MainWindow = mainWindow;
+                        mainWindow.DataContext = _applicationViewModelAccessor();
+                    }
+
+                    App.Current.MainWindow.Show();
                 });
             }
         }
 
         private readonly Func<ApplicationViewModel?> _applicationViewModelAccessor;
+        public TrayViewModel() : this(() => new ApplicationViewModel())
+        {
+            
+        }
         public TrayViewModel(Func<ApplicationViewModel> applicationViewModelProvider)
         {
             _applicationViewModelAccessor = applicationViewModelProvider;

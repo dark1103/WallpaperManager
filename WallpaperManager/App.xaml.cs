@@ -42,10 +42,13 @@ namespace WallpaperManager
             _host.Services.GetService<WallpaperUpdateService>()!.RunTask();
             _host.Services.GetService<KeyboardHookService>()!.Hook();
 
-            MainWindow = new TrayWindow()
+            var trayWindow = new TrayWindow()
             {
-                DataContext = _host.Services.GetService<TrayViewModel>()
+                DataContext = _host.Services.GetService<TrayViewModel>(),
+                Visibility = Visibility.Hidden
             };
+
+            MainWindow = null;
 
             base.OnStartup(e);
         }

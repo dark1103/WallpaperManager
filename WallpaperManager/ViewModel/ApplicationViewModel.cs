@@ -32,6 +32,7 @@ namespace WallpaperManager.ViewModel
                     _wallpaperGroupsProvider.Groups = Groups;
                     _wallpaperGroupsProvider.SaveChanges();
 
+                    App.Current.MainWindow = null;
                     SelectedGroup = null;
                     OnPropertyChanged(nameof(SelectedGroup));
 
