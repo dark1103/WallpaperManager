@@ -49,7 +49,7 @@ namespace WallpaperManager.Services
             {
                 string? currentDisplay = Display.GetDisplays().FirstOrDefault(x => x.IsGDIPrimary)?.ToPathDisplayTarget().FriendlyName;
 
-                var newWallpaperGroup = GetNewWallpaperGroup(_wallpaperGroupsProvider.Groups, DateTime.Now, currentDisplay, _stateProvider.CurrentState.CurrentStateIndex, System.Windows.SystemParameters.IsRemoteSession);
+                var newWallpaperGroup = GetNewWallpaperGroup(_wallpaperGroupsProvider.Groups, DateTime.Now, currentDisplay, _stateProvider.CurrentState.CurrentStateIndex, System.Windows.Forms.SystemInformation.TerminalServerSession);
 
                 double intervalDelay = double.MaxValue;
 

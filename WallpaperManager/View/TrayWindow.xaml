@@ -16,7 +16,7 @@
         ToolTipText="Wallpaper Manager"
         MenuActivation="LeftOrRightClick"
         PopupActivation="DoubleClick"
-        IconSource="wallpaper.ico"
+        IconSource="/wallpaper.ico"
         DoubleClickCommand="{Binding OpenCommand}">
         <tb:TaskbarIcon.ContextMenu>
             <ContextMenu>

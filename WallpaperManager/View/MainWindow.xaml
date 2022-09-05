@@ -78,8 +78,8 @@
                                     <CheckBox Grid.Row="1" Grid.Column="1"  IsChecked="{Binding AllowRDP}"
                                               ToolTip="Allow this group for remote sessions">Allow RDP</CheckBox>
                                     <hc:CheckComboBox Grid.Row="1" Grid.Column="2" Grid.ColumnSpan="3" ShowClearButton="True" 
-                                              local:CheckComBoxHelper.Attach="True"
-                                              local:CheckComBoxHelper.SelectedItems="{Binding Displays,Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                              controls:CheckComBoxHelper.Attach="True"
+                                              controls:CheckComBoxHelper.SelectedItems="{Binding Displays,Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                               ItemsSource="{Binding ElementName=Window,Path=DataContext.AvailableDisplays}" 
                                               ShowSelectAllButton="True"
                                               ToolTip="Displays"/>
