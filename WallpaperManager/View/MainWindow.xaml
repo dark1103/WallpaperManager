@@ -76,7 +76,7 @@
                                     </hc:TextBox>
 
                                     <CheckBox Grid.Row="1" Grid.Column="1"  IsChecked="{Binding AllowRDP}"
-                                              ToolTip="Allow this group for remote sessions">Allow RDP</CheckBox>
+                                              ToolTip="Allow this group for remote sessions or system startup">RDP or Startup</CheckBox>
                                     <hc:CheckComboBox Grid.Row="1" Grid.Column="2" Grid.ColumnSpan="3" ShowClearButton="True" 
                                               controls:CheckComBoxHelper.Attach="True"
                                               controls:CheckComBoxHelper.SelectedItems="{Binding Displays,Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
