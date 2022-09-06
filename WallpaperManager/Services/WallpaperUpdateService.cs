@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Win32;
 using WallpaperManager.Model;
 using WindowsDisplayAPI;
 
@@ -16,6 +17,8 @@ namespace WallpaperManager.Services
         private readonly IStateProvider _stateProvider;
 
         private CancellationTokenSource? _delayCancellationTokenSource;
+
+        private bool _isSessionLogoff = false;
 
         public WallpaperUpdateService(IWallpaperGroupsProvider wallpaperGroupsProvider, IStateProvider stateProvider)
         {
@@ -32,7 +35,17 @@ namespace WallpaperManager.Services
                 _delayCancellationTokenSource?.Cancel();
             };
 
-            Microsoft.Win32.SystemEvents.SessionSwitch += (sender, args) =>
+            SystemEvents.SessionSwitch += (sender, args) =>
+            {
+                if (args.Reason == SessionSwitchReason.SessionLogoff)
+                {
+                    _isSessionLogoff = true;
+                }
+
+                _delayCancellationTokenSource?.Cancel();
+            };
+
+            SystemEvents.DisplaySettingsChanged += (sender, args) =>
             {
                 _delayCancellationTokenSource?.Cancel();
             };
@@ -49,9 +62,13 @@ namespace WallpaperManager.Services
             {
                 string? currentDisplay = Display.GetDisplays().FirstOrDefault(x => x.IsGDIPrimary)?.ToPathDisplayTarget().FriendlyName;
 
-                var newWallpaperGroup = GetNewWallpaperGroup(_wallpaperGroupsProvider.Groups, DateTime.Now, currentDisplay, _stateProvider.CurrentState.CurrentStateIndex, System.Windows.Forms.SystemInformation.TerminalServerSession);
+                var newWallpaperGroup = GetNewWallpaperGroup(
+                    _wallpaperGroupsProvider.Groups, 
+                    DateTime.Now, currentDisplay, 
+                    _stateProvider.CurrentState.CurrentStateIndex, 
+                    System.Windows.Forms.SystemInformation.TerminalServerSession || _isSessionLogoff);
 
-                double intervalDelay = double.MaxValue;
+                double intervalDelay = TimeSpan.FromDays(1).TotalMilliseconds;
 
                 if (newWallpaperGroup != null && _stateProvider.CurrentState.Group != newWallpaperGroup)
                 {
@@ -94,7 +111,9 @@ namespace WallpaperManager.Services
 
                 _delayCancellationTokenSource = new CancellationTokenSource();
 
-                await Task.Delay((int)Math.Min(intervalDelay, timeDelay), _delayCancellationTokenSource.Token).ContinueWith(tsk => { });
+                Debug.WriteLine($"{DateTime.Now.ToString("T")}: {_stateProvider.CurrentState.CurrentImage} - {TimeSpan.FromMilliseconds(intervalDelay).TotalMinutes} | {TimeSpan.FromMilliseconds(timeDelay).TotalMinutes}");
+
+                await Task.Delay((int)Math.Min(intervalDelay, timeDelay) + 100, _delayCancellationTokenSource.Token).ContinueWith(tsk => { });
             }
         }
 
@@ -141,7 +160,7 @@ namespace WallpaperManager.Services
                 state.UsedImages.Add(newImage, DateTime.Now);
             }
 
-            updateDelay = wallpaperGroup.Interval != TimeSpan.Zero ? wallpaperGroup.Interval.TotalMilliseconds : double.MaxValue;
+            updateDelay = wallpaperGroup.Interval != TimeSpan.Zero ? wallpaperGroup.Interval.TotalMilliseconds : TimeSpan.FromDays(1).TotalMilliseconds;
 
             _stateProvider.InvokeOnChanged();
         }
