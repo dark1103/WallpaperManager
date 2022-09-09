@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows;
 using Microsoft.Win32;
 using WallpaperManager.Model;
 using WindowsDisplayAPI;
@@ -37,16 +38,17 @@ namespace WallpaperManager.Services
 
             SystemEvents.SessionSwitch += (sender, args) =>
             {
-                if (args.Reason == SessionSwitchReason.SessionLogoff)
-                {
-                    _isSessionLogoff = true;
-                }
-
                 _delayCancellationTokenSource?.Cancel();
             };
 
             SystemEvents.DisplaySettingsChanged += (sender, args) =>
             {
+                _delayCancellationTokenSource?.Cancel();
+            };
+
+            Application.Current.Exit += (sender, args) =>
+            {
+                _isSessionLogoff = true;
                 _delayCancellationTokenSource?.Cancel();
             };
         }
